@@ -1,0 +1,29 @@
+.info{
+    display: flex;
+    align-items: center;
+}
+
+.body{
+padding: 10px;
+    border: 1px solid black;
+}
+
+.body div{
+    height: 60px ;
+    width: 60px;
+    border: 1px solid black;
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.naoAtivo{
+    background-color: black;
+}
+
+.ativo{
+    border: 1px solid #FFDD1B;
+    background-color: #FFDD1B;
+   
+}

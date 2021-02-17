@@ -1,42 +1,87 @@
 
-  
-  var config = {
+
+async function start() {
+
+  var config = await {
     apiKey: "AIzaSyC7gkbf5nciQeFz7qF1CvUOJKc6lXPlP9A",
     authDomain: "automacao-451ac.firebaseapp.com",
     databaseURL: "https://automacao-451ac-default-rtdb.firebaseio.com",
     storageBucket: "automacao-451ac.appspot.com"
   };
-  firebase.initializeApp(config);
-  var database = firebase.database();
+  await firebase.initializeApp(config);
+  // var database = await firebase.database();
 
-
-
-  // var ref = firebase.database().ref("CASA");
-  // ref.orderByKey().endAt("L1").on("child_added", function(snapshot) {
-  //   console.log(snapshot.val());
-  // });
+  let keys = [];
+  let values;
 
   
-  firebase.database().ref('CASA').once('value').then((snapshot) => {
-    // console.log(snapshot.val().L1)
-    // console.log(snapshot.val().L2)
-    // console.log(snapshot.val().L3)
-    // console.log(snapshot.val().L4)
-    // console.log(snapshot.val().Volume)
-   
-      
-      setTimeout( "Time", 5000,window.location.reload() ),500;
-      
-      p1.append("Led1:"+snapshot.val().L1);
-      p2.append("Led2:"+snapshot.val().L2);
-      p3.append("Led3:"+snapshot.val().L3);
-      p4.append("Led4:"+snapshot.val().L4);
-      v1.append("Volume:"+snapshot.val().Volume);
-       setInterval(5000000);
-        
-      // ...
+  await firebase.database()
+    .ref('CASA')
+    .once('value')
+    .then(async (snapshot) => {
+      const objValues = snapshot.val()
+      keys = Object.keys(objValues)
+      values = objValues
     });
-  
-  
+    mostrarDados(keys,values)
 
-   
+ 
+  setInterval(async ()=>{
+    let {tKeys,tValues} = await getValue()
+    for(let i = 0; i < tKeys.length; i++){
+     let tKey = tKeys[i]
+     let cKey = keys[i]
+     if(tValues[tKey] != values[cKey]){
+      values = tValues
+      mostrarDados(keys,values)
+      
+     }
+    }
+    
+  },500)
+}
+
+start()
+
+function mostrarDados(keys,values){
+  const body = document.querySelector('.info');
+  body.innerHTML = ""
+  keys.forEach(key =>{
+    
+    const value = values[key]
+    criarElemento(key,value,body)
+  })
+}
+
+function criarElemento(key,value,pai){
+  const body = document.createElement("div")
+  const titulo = document.createElement("p")
+  const valor = document.createElement("div")
+
+  body.classList.add("body")
+
+  titulo.innerHTML = key;
+  if(key == "Volume"){
+      valor.innerText = value;
+  }else{
+    valor.classList.add(value?"ativo":"naoAtivo")
+  }
+  
+  body.appendChild(titulo)
+  body.appendChild(valor)
+  pai.appendChild(body)
+}
+
+
+async function getValue() {
+  let tKeys = [];
+  let tValues;
+  await firebase.database().ref('CASA').once('value').then(async snapshot => {
+    const objValues = snapshot.val()
+    tKeys = Object.keys(objValues)
+    tValues = objValues
+  })
+  return {tKeys,tValues};
+}
+
+
